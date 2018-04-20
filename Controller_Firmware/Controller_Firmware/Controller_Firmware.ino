@@ -335,8 +335,8 @@ float miles_this_trip = 0;
   Cruise Variables Setup
 */
 
-#define SETCRUISEDELAY 100
-#define MAINTAINPULSEPERIOD 1000
+#define SETCRUISEDELAY 1000
+#define MAINTAINPULSEPERIOD 100
 
 bool PB6_toggle_pressstarted = false;
 unsigned long PB6_toggle_downtime = 0;
@@ -782,7 +782,6 @@ void loop() {
               if (millis() - maintain_pulse_start_time > MAINTAINPULSEPERIOD) {
                 maintain_pulse_started = false;
                 digitalWrite(CRZ_MAINTAIN_PIN, LOW);
-				//digitalWrite(CRZ_MAINTAIN_PIN, HIGH);
                 setAndWrite(PB6_LED_EN, HIGH);
                 set_cruise_delay_started = false;
               }
