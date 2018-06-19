@@ -1,6 +1,6 @@
 /*
-Test Functions
-Run these at your own peril, some of them use state and could mess things up
+These are test functions used to debug hardware issues. Run at your own peril, many of them modify global state.
+Add these to Controller_Firmware as needed
 */
 
 void test_keypad_pushbuttons(void) {
@@ -49,7 +49,7 @@ void test_start_button(void) {
 
 		set_pb8_color(pb8_colors[i]);
 
-		debug_print(pb8_colors[i], true);
+		printer.debug_print(pb8_colors[i], true);
 
 		bool waiting_for_push = true;
 
@@ -69,7 +69,7 @@ void test_start_button(void) {
 
 void test_LEDs(void) {
 
-	debug_print("testing leds", true);
+	printer.debug_print("testing leds", true);
 
 	int LEDs[2] = { LED1_EN_PIN, LED2_EN_PIN };
 
@@ -91,7 +91,7 @@ void test_LEDs(void) {
 		delay(1000);
 	}
 
-	debug_print("leds done", true);
+	printer.debug_print("leds done", true);
 }
 
 void test_output_fets(void) {
