@@ -6,9 +6,6 @@
 #include "data_block.h"
 
 
-int debug_LED_en = 13;
-
-
 /*
   State Machine Setup
 */
@@ -49,25 +46,29 @@ bool startButtonPressed = false;
 #define COMBOLENGTH 4
 int comboPos = 0;
 int comboBuffer[COMBOLENGTH];
-static int goodCombo[COMBOLENGTH] = { 0, 1, 2, 3 };
+static int goodCombo[COMBOLENGTH] = { 2, 5, 2, 0 };
 
 
 /*
   analog pin declarations
 */
 
-int VBAT_SIG_PIN = 0; // on the arduino analog pins
-int ECT_SIG_PIN = 1; // on the arduino analog pins
-int ACT_SIG_PIN = 2; // on the arduino analog pins
-int OILP_SIG_PIN = 3; // on the arduino analog pins
-int FUEL_SIG_PIN = 4; // on the arduino analog pins
-int BATC_SIG_PIN = 6; // on the arduino analog pins
-int EGOL_SIG_PIN = 7; // on the arduino analog pins
-int EGOR_SIG_PIN = 8; // on the arduino analog pins
-int EBRK_SIG_PIN = 9; // on the arduino analog pins
-int RVRS_SIG_PIN = 10; // on the arduino analog pins
-int PSU1_SIG_PIN = A11; // on the arduino analog pins
-
+int VBAT_SIG_PIN =	0; // on the arduino analog pins
+int ECT_SIG_PIN =	1; // on the arduino analog pins
+int ACT_SIG_PIN =	2; // on the arduino analog pins
+int OILP_SIG_PIN =	3; // on the arduino analog pins
+int FUEL_SIG_PIN =	4; // on the arduino analog pins
+int OILL_SIG_PIN =	A5; // on the arduino analog pins - used as digital input
+int BATC_SIG_PIN =	6; // on the arduino analog pins
+int EGOL_SIG_PIN =	7; // on the arduino analog pins
+int EGOR_SIG_PIN =	8; // on the arduino analog pins
+int EBRK_SIG_PIN =	9; // on the arduino analog pins
+int RVRS_SIG_PIN =	10; // on the arduino analog pins
+int PSU1_SIG_PIN =	A11; // on the arduino analog pins - used as digital input
+int MUX_SIG_PIN =	12; // on the arduino analog pins
+int CSS_SIG_PIN =	13; // on the arduino analog pins
+int LDR_SIG_PIN =	14; // on the arduino analog pins
+int LITE_SIG_PIN =	15; // on the arduino analog pins
 
 /*
   digital pin declarations
@@ -76,60 +77,70 @@ int PSU1_SIG_PIN = A11; // on the arduino analog pins
 #define NUMOUTFETS 12
 #define NUMDIGPINS 33
 
-int OILL_SIG_PIN = A5; // on the arduino analog pins, used as a digial input
+int TACK_SIG_PIN =	2; // on the arduino digital pins - an interrupt pin
+int SPED_SIG_PIN =	3;  // on the arduino digital pins - an interrupt pin
+int LED2_EN_PIN =	4; // on the arduino digital pins - green LED
+int STEN_EN_PIN =	5; // on the arduino digital pins
+int RUEN_EN_PIN =	6; // on the arduino digital pins
+int DIRL_EN_PIN =	7; // on the arduino digital pins
+int DIRR_EN_PIN =	8; // on the arduino digital pins
+int WIPEO_EN_PIN =	9; // on the arduino digital pins
+int WIPEL_EN_PIN =	10; // on the arduino digital pins
+int WIPEH_EN_PIN =	11; // on the arduino digital pins
+int LED1_EN_PIN =	12; // on the arduino digital pins - red LED
+int debug_LED_en =	13; // on the arduino digital pins - onboard LED, not visible
 
-int TACK_SIG_PIN = 2; // on the arduino digital pins - an interrupt pin
-int SPED_SIG_PIN = 3;  // on the arduino digital pins - an interrupt pin
-int ECF_EN_PIN = 4; // on the arduino digital pins
-int STEN_EN_PIN = 5; // on the arduino digital pins
-int RUEN_EN_PIN = 6; // on the arduino digital pins
-int DIRL_EN_PIN = 7; // on the arduino digital pins
-int DIRR_EN_PIN = 8; // on the arduino digital pins
-int WIPEO_EN_PIN = 9; // on the arduino digital pins
-int WIPEL_EN_PIN = 10; // on the arduino digital pins
-int WIPEH_EN_PIN = 11; // on the arduino digital pins
+/* pins 14, 15 are used by the hardware Serial3 16, 17 are not used */
 
-int HALL_SIG_PIN = 18; // on the arduino digital pins - an interrupt pin
-int HALR_SIG_PIN = 19; // on the arduino digital pins - an interrupt pin
+int HALL_SIG_PIN =	18; // on the arduino digital pins - an interrupt pin
+int HALR_SIG_PIN =	19; // on the arduino digital pins - an interrupt pin
+
+/* pins 20, 21 are not used */
+
+int ECF_EN_PIN = ; // on the arduino digital pins
 
 // Power MGMT pins
-int PSU1_EN_PIN = 22; // on the arduino digital pins
-int PSU2_EN_PIN = 23; // on the arduino digital pins
-int PSU3_EN_PIN = 24; // on the arduino digital pins
-
-int output_fets[NUMOUTFETS] = {SPED_SIG_PIN, ECF_EN_PIN, STEN_EN_PIN, RUEN_EN_PIN, DIRL_EN_PIN, DIRR_EN_PIN, WIPEO_EN_PIN, WIPEL_EN_PIN, WIPEH_EN_PIN, PSU1_EN_PIN, PSU2_EN_PIN, PSU3_EN_PIN};
+int PSU1_EN_PIN =	22; // on the arduino digital pins - this is the onboard switching converter
+int PSU2_EN_PIN =	23; // on the arduino digital pins - offboard
+int PSU3_EN_PIN =	24; // on the arduino digital pins - offboard
+int PSU4_EN_PIN =	25; // on the arduino digital pins - offboard
 
 // Shift Register Control Pins
-int SREG_SER_PIN = 26; // on the arduino digital pins
-int SREG_RCLK_PIN = 27; // on the arduino digital pins
-int SREG_SRCLK_PIN = 28; // on the arduino digital pins
-int SREG_SRCLR_PIN = 29; // on the arduino digital pins
-int SREG_OE_PIN = 30; // on the arduino digital pins
+int SREG_SER_PIN =		26; // on the arduino digital pins
+int SREG_RCLK_PIN =		27; // on the arduino digital pins
+int SREG_SRCLK_PIN =	28; // on the arduino digital pins
+int SREG_SRCLR_PIN =	29; // on the arduino digital pins
+int SREG_OE_PIN =		30; // on the arduino digital pins
 
 // Mux control pins
+int MUX_S3_PIN =	31; // on the arduino digital pins
+int MUX_S2_PIN =	32; // on the arduino digital pins
+int MUX_S1_PIN =	33; // on the arduino digital pins
+int MUX_S0_PIN =	34; // on the arduino digital pins
+int MUX_EN_PIN =	35; // on the arduino digital pins
 
-int MUX_SIG_PIN = 12; // on the arduino analog pins
-int MUX_S3_PIN = 31; // on the arduino digital pins
-int MUX_S2_PIN = 32; // on the arduino digital pins
-int MUX_S1_PIN = 33; // on the arduino digital pins
-int MUX_S0_PIN = 34; // on the arduino digital pins
-int MUX_EN_PIN = 35; // on the arduino digital pins
-
+// general purpose mosfets
+int GPN0_EN_PIN =	36; // on the arduino digital pins
+int GPN1_EN_PIN =	37; // on the arduino digital pins
+int GPP0_EN_PIN =	38; // on the arduino digital pins
+int GPP1_EN_PIN =	39; // on the arduino digital pins
 
 // Cruise control pins
-int CRZ_RESUME_PIN = 40; // on the arduino digital pins
-int CRZ_MAINTAIN_PIN = 41; // on the arduino digital pins
-int CRZ_DISABLE_PIN = 42; // on the arduino digital pins
+int CRZ_RESUME_PIN =	40; // on the arduino digital pins
+int CRZ_MAINTAIN_PIN =	41; // on the arduino digital pins
+int CRZ_DISABLE_PIN =	42; // on the arduino digital pins
 
 // Starter button pins
-int PB8_SIG_PIN = 43; // on the arduino digital pins
-int PB8_BLED_PIN = 44; // on the arduino digital pins
-int PB8_GLED_PIN = 45; // on the arduino digital pins
-int PB8_RLED_PIN = 46; // on the arduino digital pins
+int PB8_SIG_PIN =	43; // on the arduino digital pins
+int PB8_BLED_PIN =	44; // on the arduino digital pins
+int PB8_GLED_PIN =	45; // on the arduino digital pins
+int PB8_RLED_PIN =	46; // on the arduino digital pins
 
-// Indicator LED pins
-int LED2_EN_PIN = 47; // on the arduino digital pins - green
-int LED1_EN_PIN = 48; // on the arduino digital pins - red
+// Debug LEDs
+int LED3_EN_PIN =	47; // on the arduino digital pins - onboard debug pin
+int LED4_EN_PIN =	48; // on the arduino digital pins - onboard debug pin
+
+int output_fets[NUMOUTFETS] = { SPED_SIG_PIN, ECF_EN_PIN, STEN_EN_PIN, RUEN_EN_PIN, DIRL_EN_PIN, DIRR_EN_PIN, WIPEO_EN_PIN, WIPEL_EN_PIN, WIPEH_EN_PIN, PSU1_EN_PIN, PSU2_EN_PIN, PSU3_EN_PIN };
 
 
 /*
@@ -379,15 +390,15 @@ void setup() {
   */
 
   Serial.begin(115200);
-  Serial3.begin(115200);
+  Serial3.begin(9600);
 
   /*
     Set Up Pins
   */
 
   // set initial pinModes
-  int digital_pins[37]  = { ECF_EN_PIN,   STEN_EN_PIN,  RUEN_EN_PIN,  DIRL_EN_PIN,  DIRR_EN_PIN,  WIPEO_EN_PIN, WIPEL_EN_PIN, WIPEH_EN_PIN, PSU1_EN_PIN,  PSU2_EN_PIN,  PSU3_EN_PIN,  SREG_SER_PIN, SREG_RCLK_PIN,  SREG_SRCLK_PIN,   SREG_SRCLR_PIN,   SREG_OE_PIN,  MUX_S3_PIN,   MUX_S2_PIN,   MUX_S1_PIN,   MUX_S0_PIN,   MUX_EN_PIN,   CRZ_RESUME_PIN,   CRZ_DISABLE_PIN,  PB8_SIG_PIN,  PB8_BLED_PIN, PB8_GLED_PIN, PB8_RLED_PIN, LED2_EN_PIN,  LED1_EN_PIN,  PSU1_SIG_PIN, OILL_SIG_PIN, CRZ_MAINTAIN_PIN, SPED_SIG_PIN, TACK_SIG_PIN, HALL_SIG_PIN, HALR_SIG_PIN, debug_LED_en };
-  int pin_modes[37]   = { OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     INPUT,      OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,       OUTPUT,       OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,       OUTPUT,       INPUT,      OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     OUTPUT,     INPUT,      INPUT,      OUTPUT,       INPUT_PULLUP, INPUT_PULLUP, INPUT_PULLUP, INPUT_PULLUP, OUTPUT };
+  int digital_pins[37]  = { ECF_EN_PIN,		STEN_EN_PIN,	RUEN_EN_PIN,	DIRL_EN_PIN,	DIRR_EN_PIN,	WIPEO_EN_PIN,	WIPEL_EN_PIN,	WIPEH_EN_PIN,	PSU1_EN_PIN,	PSU2_EN_PIN,	PSU3_EN_PIN,	SREG_SER_PIN,	SREG_RCLK_PIN,		SREG_SRCLK_PIN,		SREG_SRCLR_PIN,		SREG_OE_PIN,	MUX_S3_PIN,		MUX_S2_PIN,		MUX_S1_PIN,		MUX_S0_PIN,		MUX_EN_PIN,		CRZ_RESUME_PIN,		CRZ_DISABLE_PIN,	PB8_SIG_PIN,	PB8_BLED_PIN,		PB8_GLED_PIN,		PB8_RLED_PIN,		LED2_EN_PIN,		LED1_EN_PIN,		PSU1_SIG_PIN,		OILL_SIG_PIN,		CRZ_MAINTAIN_PIN,	SPED_SIG_PIN,	TACK_SIG_PIN,	HALL_SIG_PIN,	HALR_SIG_PIN,	debug_LED_en };
+  int pin_modes[37]		= { OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			INPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,				OUTPUT,				OUTPUT,				OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,			OUTPUT,				OUTPUT,				INPUT,			OUTPUT,				OUTPUT,				OUTPUT,				OUTPUT,				OUTPUT,				INPUT,				INPUT,				OUTPUT,				INPUT_PULLUP,	INPUT_PULLUP,	INPUT_PULLUP,	INPUT_PULLUP,	OUTPUT };
   for (int i = 0; i < 37; i++) {
     pinMode(digital_pins[i], pin_modes[i]);
   }
@@ -560,7 +571,7 @@ void loop() {
     }
   }
   
-  set_display_variables(true);
+  set_display_variables(false);
 
   // data block mapping
   db_f0 = display_rpm;    // works
@@ -900,7 +911,7 @@ void transitionIntoState(int toState) {
 
     case MODEAUTOSTART:
     {
-      transitiontimeoutEnabled = true;
+      transitiontimeoutEnabled = false;
       killSwitchEnabled = true;
       starting = false;
       shutting_off = false;
@@ -1055,20 +1066,22 @@ void send_data_block(Stream &port) {
 void process_message(Stream &port) {
   if (port.available() > 0) {
 
+	debug_print("Message Requested", true);
+
     char b = port.read();
 
     switch (b) {
     case '0':
-      digitalWrite(13, LOW);
       break;
 
     case '1':
-      digitalWrite(13, HIGH);
       break;
     }
 
     send_data_block(port);
     port.flush();
+
+	debug_print("Data Block Sent", true);
   }
 }
 

@@ -2,6 +2,8 @@
 
 ## Serial Communication
 
+
+
 |  **Signal Name** | **Variable Name** | **Type** | **# Bytes** |
 |  ------ | ------ | ------ | ------ |
 |  RPM | db_f0 | float | 4 |
