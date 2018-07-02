@@ -41,7 +41,7 @@ const long start_button_duration = 200; // how long the start button must be hel
 #define COMBOLENGTH 4
 int combo_pos = 0;
 int combo_buffer[COMBOLENGTH];
-static int good_combo_buffer[COMBOLENGTH] = { 2, 5, 2, 0 };
+static int good_combo_buffer[COMBOLENGTH] = { 0, 0, 0, 0 }; // this is zero-indexed
 
 
 /*
@@ -444,8 +444,8 @@ void setup() {
 
   transition_into_state(MODECOMBO); // prep state machine functions
   
-  printer.enable(); // for debugging
-  // printer.disable(); // for deployment
+  //printer.enable(); // for debugging
+  printer.disable(); // for deployment
   printer.debug_print("Setup Complete", true);
   
 }
@@ -584,7 +584,7 @@ void loop() {
     }
   }
   
-  set_display_variables(true);
+  set_display_variables(false);
 
   // data block mapping
   db.db_f0 = display_rpm;
